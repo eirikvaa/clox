@@ -6,6 +6,9 @@
 #include "debug.h"
 #include "vm.h"
 
+static void repl();
+static void runFile(const char *path);
+
 int main(int argc, const char* argv[]) {
 	initVM();
 
