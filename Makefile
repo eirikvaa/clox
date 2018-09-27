@@ -30,8 +30,8 @@ compiler.o: compiler.c compiler.h
 scanner.o: scanner.c scanner.h
 	$(CC) $(CFLAGS) -c scanner.c scanner.h
 
-object.o: object.h
-	$(CC) $(CFLAGS) -c object.h
+object.o: object.h object.c
+	$(CC) $(CFLAGS) -c object.h object.c
 
 clean:
 	rm -f clox *.o *.h.gch

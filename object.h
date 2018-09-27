@@ -15,6 +15,10 @@ typedef enum {
 	OBJ_STRING
 } ObjType;
 
+struct sObj {
+	ObjType type;
+};
+
 // Note: It's nice to store the length of the character so we don't need to
 // walk the characters to find the null string to find out how long it is.
 // Also, the first field is an Obj. This will make the memory of Obj line up
@@ -27,10 +31,7 @@ struct sObjString {
 	char* chars;
 };
 
-struct sObj {
-	ObjType Obj;
-};
-
+ObjString* takeString(char* chars, int length);
 ObjString* copyString(const char* chars, int length);
 
 // We could not have used a macro for this because that would mean the operation we
