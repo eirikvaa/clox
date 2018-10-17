@@ -17,6 +17,7 @@ typedef enum {
 
 struct sObj {
 	ObjType type;
+	struct sObj* next;
 };
 
 // Note: It's nice to store the length of the character so we don't need to
