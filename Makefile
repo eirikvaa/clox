@@ -3,8 +3,11 @@ CFLAGS = -std=c99 -Wall -g
 
 all: clox
 
-clox: main.o memory.o chunk.o debug.o value.o vm.o compiler.o scanner.o object.o
-	$(CC) $(CFLAGS) -o clox main.o memory.o chunk.o debug.o value.o vm.o compiler.o scanner.o object.o
+run: clox
+	./clox $(file)
+
+clox: main.o memory.o chunk.o debug.o value.o vm.o compiler.o scanner.o object.o table.o
+	$(CC) $(CFLAGS) -o clox main.o memory.o chunk.o debug.o value.o vm.o compiler.o scanner.o object.o table.o
 
 main.o: main.c
 	$(CC) $(CFLAGS) -c main.c
@@ -32,6 +35,9 @@ scanner.o: scanner.c scanner.h
 
 object.o: object.h object.c
 	$(CC) $(CFLAGS) -c object.h object.c
+
+table.o: table.h table.c
+	$(CC) $(CFLAGS) -c table.h table.c
 
 clean:
 	rm -f clox *.o *.h.gch
