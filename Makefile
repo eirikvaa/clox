@@ -3,8 +3,8 @@ CFLAGS = -std=c99 -Wall -g
 
 all: clox
 
-run: clox
-	./clox $(file)
+run:
+	./clox clox.txt
 
 clox: main.o memory.o chunk.o debug.o value.o vm.o compiler.o scanner.o object.o table.o
 	$(CC) $(CFLAGS) -o clox main.o memory.o chunk.o debug.o value.o vm.o compiler.o scanner.o object.o table.o
