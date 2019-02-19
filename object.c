@@ -13,7 +13,10 @@
 static Obj* allocateObject(size_t size, ObjType type) {
 	Obj* object = (Obj*)reallocate(NULL, 0, size);
 	object->type = type;
+
+	object->next = vm.objects;
 	vm.objects = object;
+
 	return object;
 }
 
@@ -22,7 +25,7 @@ static ObjString* allocateString(char* chars, int length, uint32_t hash) {
 	string->length = length;
 	string->chars = chars;
 	string->hash = hash;
-	
+
 	tableSet(&vm.strings, string, NIL_VAL);
 
 	return string;
@@ -44,7 +47,7 @@ ObjString* takeString(char* chars, int length) {
 	ObjString* interned = tableFindString(&vm.strings, chars, length, hash);
 
 	if (interned != NULL) {
-		FREE_ARRAY(char, chars, length);
+		FREE_ARRAY(char, chars, length + 1);
 		return interned;
 	}
 

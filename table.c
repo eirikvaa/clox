@@ -37,7 +37,7 @@ static Entry* findEntry(Entry* entries, int capacity, ObjString* key) {
 			return entry;
 		}
 		
-		index = (index +1 ) % capacity;
+		index = (index + 1) % capacity;
 	}
 }
 
@@ -81,11 +81,12 @@ bool tableSet(Table* table, ObjString* key, Value value) {
 	}
 		
 	Entry* entry = findEntry(table->entries, table->capacity, key);
+
 	bool isNewKey = entry->key == NULL;
+	if (isNewKey && IS_NIL(entry->value)) table->count++;
+
 	entry->key = key;
 	entry->value = value;
-
-	if (isNewKey) table->count++;
 	return isNewKey;
 }
 
@@ -103,7 +104,7 @@ bool tableDelete(Table* table, ObjString* key) {
 	return true;
 }
 
-void tableAllAdd(Table* from, Table* to) {
+void tableAddAll(Table* from, Table* to) {
 	for (int i = 0; i < from->capacity; i++) {
 		Entry* entry = &from->entries[i];
 		if (entry->key != NULL) {
@@ -112,25 +113,27 @@ void tableAllAdd(Table* from, Table* to) {
 	}
 }
 
-ObjString* tableFindString(Table* table, const char* chars, int length, uint32_t hash) {
-	// If the table is empty, we definitely won't find it
+ObjString* tableFindString(Table* table, const char* chars, int length,
+						   uint32_t hash) {
+	// If the table is empty, we definitely won't find it.
 	if (table->entries == NULL) return NULL;
 
-	// Figure out where to insert it into the table. Use open adressing and basic linear probing
 	uint32_t index = hash % table->capacity;
 
 	for (;;) {
 		Entry* entry = &table->entries[index];
 
-		if (entry->key == NULL) return NULL;
-		if (entry->key->length == length && memcpy(entry->key->chars, chars, length) == 0) {
-			// We found it
+		if (entry->key == NULL) {
+			// Stop if we find an empty non-tombstone entry.
+			if (IS_NIL(entry->value)) return NULL;
+		} else if (entry->key->length == length &&
+				   entry->key->hash == hash &&
+				   memcmp(entry->key->chars, chars, length) == 0) {
+			// We found it.
 			return entry->key;
 		}
 
-		// Try the next slot
+		// Try the next slot.
 		index = (index + 1) % table->capacity;
 	}
-
-	return NULL;
 }
