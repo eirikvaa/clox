@@ -260,7 +260,7 @@ static uint8_t identifierConstant(Token *name) {
     return makeConstant(OBJ_VAL(copyString(name->start, name->length)));
 }
 
-static uint8_t namedVariable(Token name, bool canAssign) {
+static void namedVariable(Token name, bool canAssign) {
     int arg = identifierConstant(&name);
 
     if (canAssign && match(TOKEN_EQUAL)) {
