@@ -112,3 +112,4 @@ main.o
 memory.h.gch
 memory.o
 clox
+.DS_STORE
