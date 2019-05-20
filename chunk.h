@@ -27,6 +27,9 @@ typedef enum {
 	OP_DIVIDE,
 	OP_NOT,
 	OP_RETURN,
+	OP_JUMP_IF_FALSE,
+	OP_JUMP,
+	OP_LOOP,
 } OpCode;
 
 // This is data we store along with instructions. This will be dynamic

@@ -8,4 +8,8 @@ breakfast = "beignets with " + beverage;
     // var a = a; Produces an error as expected!
 }
 
+if (true) {
+    print "Hello";
+}
+
 print breakfast;
