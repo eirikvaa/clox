@@ -283,7 +283,6 @@ static uint8_t parseVariable(const char *errorMessage) {
 
 // Note: “Declaring” is when it’s added to the scope, and “defining” is when it becomes available for use.
 static void markInitialized() {
-    if (current->scopeDepth == 0) return;
     current->locals[current->localCount - 1].depth = current->scopeDepth;
 }
 
@@ -324,11 +323,13 @@ static void binary(bool canAssign) {
             break;
         case TOKEN_GREATER_EQUAL:
             emitBytes(OP_LESS, OP_NOT);
+            break;
         case TOKEN_LESS:
             emitByte(OP_LESS);
             break;
         case TOKEN_LESS_EQUAL:
             emitBytes(OP_GREATER, OP_NOT);
+            break;
         case TOKEN_PLUS:
             emitByte(OP_ADD);
             break;
@@ -408,8 +409,6 @@ static void namedVariable(Token name, bool canAssign) {
     } else {
         emitBytes(getOp, (uint8_t) arg);
     }
-
-    emitBytes(OP_GET_GLOBAL, (uint8_t) arg);
 }
 
 static void variable(bool canAssign) {
@@ -437,12 +436,12 @@ static void unary(bool canAssign) {
 }
 
 ParseRule rules[] = {
-        {grouping, NULL, PREC_CALL},       // TOKEN_LEFT_PAREN
+        {grouping, NULL, PREC_NONE},       // TOKEN_LEFT_PAREN
         {NULL,     NULL, PREC_NONE},       // TOKEN_RIGHT_PAREN
         {NULL,     NULL, PREC_NONE},       // TOKEN_LEFT_BRACE
         {NULL,     NULL, PREC_NONE},       // TOKEN_RIGHT_BRACE
         {NULL,     NULL, PREC_NONE},       // TOKEN_COMMA
-        {NULL,     NULL, PREC_CALL},       // TOKEN_DOT
+        {NULL,     NULL, PREC_NONE},       // TOKEN_DOT
         {unary, binary,  PREC_TERM},       // TOKEN_MINUS
         {NULL,  binary,  PREC_TERM},       // TOKEN_PLUS
         {NULL,     NULL, PREC_NONE},       // TOKEN_SEMICOLON
@@ -498,7 +497,6 @@ static void parsePrecedence(Precedence precedence) {
 
     if (canAssign && match(TOKEN_EQUAL)) {
         error("Invalid assignment target.");
-        expression();
     }
 }
 
@@ -533,8 +531,8 @@ static void varDeclaration() {
 
 static void expressionStatement() {
     expression();
-    emitByte(OP_POP);
     consume(TOKEN_SEMICOLON, "Expect ';' after expression.");
+    emitByte(OP_POP);
 }
 
 static void forStatement() {
@@ -542,15 +540,13 @@ static void forStatement() {
 
     consume(TOKEN_LEFT_PAREN, "Expect '(' after 'for'.");
 
-    if (match(TOKEN_VAR)) {
-        varDeclaration();
-    } else if (match(TOKEN_SEMICOLON)) {
+    if (match(TOKEN_SEMICOLON)) {
         // No initializer
+    } else if (match(TOKEN_VAR)) {
+        varDeclaration();
     } else {
         expressionStatement();
     }
-
-    consume(TOKEN_SEMICOLON, "Expect ';'.");
 
     int loopStart = currentChunk()->count;
 
@@ -563,10 +559,6 @@ static void forStatement() {
         exitJump = emitJump(OP_JUMP_IF_FALSE);
         emitByte(OP_POP);
     }
-
-    consume(TOKEN_SEMICOLON, "Expect ';'.");
-    consume(TOKEN_SEMICOLON, "Expect ')' after for clauses.");
-
 
     if (!match(TOKEN_RIGHT_PAREN)) {
         int bodyJump = emitJump(OP_JUMP);

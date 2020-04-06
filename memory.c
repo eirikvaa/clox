@@ -7,6 +7,10 @@
 void* reallocate(void* previous, size_t oldSize, size_t newSize) {
 	// Realloc will try to take the pointer previous and extend it to the size
 	// given by newSize.
+	if (newSize == 0) {
+	    free(previous);
+	    return NULL;
+	}
 	return realloc(previous, newSize);
 }
 

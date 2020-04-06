@@ -42,7 +42,7 @@ static Entry* findEntry(Entry* entries, int capacity, ObjString* key) {
 }
 
 bool tableGet(Table* table, ObjString* key, Value* value) {
-	if (table->entries == NULL) return false;
+	if (table->count == 0) return false;
 
 	Entry* entry = findEntry(table->entries, table->capacity, key);
 	if (entry->key == NULL) return false;
@@ -116,7 +116,7 @@ void tableAddAll(Table* from, Table* to) {
 ObjString* tableFindString(Table* table, const char* chars, int length,
 						   uint32_t hash) {
 	// If the table is empty, we definitely won't find it.
-	if (table->entries == NULL) return NULL;
+	if (table->count == 0) return NULL;
 
 	uint32_t index = hash % table->capacity;
 
