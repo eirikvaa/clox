@@ -31,5 +31,4 @@ void freeVM();
 InterpretResult interpret(const char *path);
 void push(Value value);
 Value pop();
-static void resetStack();
 #endif

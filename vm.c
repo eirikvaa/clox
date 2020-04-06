@@ -12,6 +12,10 @@
 
 VM vm;
 
+static void resetStack() {
+    vm.stackTop = vm.stack;
+}
+
 void initVM() {
 	resetStack();
 	vm.objects = NULL;
@@ -61,10 +65,6 @@ static void concatenate() {
 
 	ObjString* result = takeString(chars, length);
 	push(OBJ_VAL(result));
-}
-
-static void resetStack() {
-	vm.stackTop = vm.stack;
 }
 
 static void runtimeError(const char *format, ...) {
